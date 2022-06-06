@@ -103,11 +103,14 @@ class BN():
                 factor = newFactor 
             else: 
                 factor = factor.mult(newFactor)
+                # print("Mult:",end="")
+                # factor.print()
 
             if self.names[index] not in qcond and self.names[index] not in qvars: 
                 # 如果是隐藏变量, 则消元
                 factor = SumOut(self.names[index],factor)
-            
+            # print("Sum:",end="")
+            # factor.print()
         # 归一化最后的 factor 结果
         # 假设 查询的var只有一个 
         # TODO: 扩展到更高维
@@ -116,8 +119,7 @@ class BN():
         if arr.shape[0] != 2:
             print("Wrong dimension!")
             return 
-        import math 
-        alpha = math.sqrt((arr ** 2).sum())
+        alpha = arr.sum()
         arr = arr/alpha 
         var = result_df.columns.to_list()[0]
         pos = result_df[(result_df[var] == query.vars[var])].index.tolist()[0]

@@ -75,12 +75,12 @@ class Factor():
         # lastname = 0 
         newDf[:mid,:-2] = df 
         newDf[:mid,-2] = 0
-        newDf[:mid,-1] = prob
+        newDf[:mid,-1] = 1-prob
 
         # lastname = 1
         newDf[mid:,:-2] = df
         newDf[mid:,-2] =  1
-        newDf[mid:,-1] = 1-prob
+        newDf[mid:,-1] = prob
 
         column = vars.copy() 
         column.append("Value")
@@ -88,6 +88,7 @@ class Factor():
         newDf[column[:-1]] = newDf[column[:-1]].astype(int)
 
         # 处理 conditions
+        # 固定 P(x|Y) 中Y的取值
         if conditions is not None:
             bool_index = True 
             available_condition = []
