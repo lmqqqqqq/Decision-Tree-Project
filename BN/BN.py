@@ -153,6 +153,6 @@ if __name__ == "__main__":
     q = Query() 
     q.fromFile()
     bn = BN()
-    bn.fromFolder("./BN")
+    bn.fromFolder("../netstruct/")
     prob = bn.ask(q)
     print(prob)
