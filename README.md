@@ -1,3 +1,3 @@
 # ai-project
 
-![groot](img/groot.jepg)
+![groot](img/groot.jpeg)
