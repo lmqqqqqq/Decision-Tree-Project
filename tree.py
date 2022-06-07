@@ -4,11 +4,9 @@ from collections import Counter
 
 
 class Decision_Tree():
-
     pre_pruning = True
     post_pruning = True
     choice = '1'
-
 
     def read_dataset(self, filename):
         """
@@ -324,7 +322,6 @@ if __name__ == '__main__':
 
     print('下面开始创建相应的决策树-------')
 
-
     # ID3决策树
     if T.choice == '1':
         labels_tmp = labels[:]  # 拷贝，createTree会改变labels
@@ -333,6 +330,8 @@ if __name__ == '__main__':
         testSet = T.read_testset(testfile)
         print("下面为测试数据集结果：")
         print('ID3_TestSet_classifyResult:\n', T.classifytest(ID3desicionTree, labels, testSet))
+        print('测试数据集正确率：',
+              100 * T.cal_acc(T.classifytest(ID3desicionTree, labels, testSet), [ans[-1] for ans in testSet]), '%')
         print("---------------------------------------------")
 
     # C4.5决策树
@@ -343,4 +342,6 @@ if __name__ == '__main__':
         testSet = T.read_testset(testfile)
         print("下面为测试数据集结果：")
         print('C4.5_TestSet_classifyResult:\n', T.classifytest(C45desicionTree, labels, testSet))
+        print('测试数据集正确率：',
+              100 * T.cal_acc(T.classifytest(C45desicionTree, labels, testSet), [ans[-1] for ans in testSet]), '%')
         print("---------------------------------------------")
