@@ -165,6 +165,27 @@ class Decision_Tree():
                 bestFeature = i  # 选择最大的gain ratio对应的feature
         return bestFeature
 
+    # 利用CART算法选择最优划分属性
+    def CART_chooseBestFeatureToSplit(self, dataset):
+        numFeatures = len(dataset[0]) - 1
+        bestGini = 999999.0
+        bestFeature = -1
+        for i in range(numFeatures):
+            featList = [example[i] for example in dataset]
+            uniqueVals = set(featList)
+            gini = 0.0
+            for value in uniqueVals:
+                subdataset = self.splitdataset(dataset, i, value)
+                p = len(subdataset) / float(len(dataset))
+                subp = len(self.splitdataset(subdataset, -1, 0)) / \
+                    float(len(subdataset))
+                gini += p * (1.0 - pow(subp, 2) - pow(1 - subp, 2))
+            print(u"CART中第%d个特征的基尼值为：%.3f" % (i, gini))
+            if (gini < bestGini):
+                bestGini = gini
+                bestFeature = i
+        return bestFeature
+
     # 以样本中的多数确定叶子结点的分类
     def majorityCnt(self, classList):
         '''
@@ -332,6 +353,79 @@ class Decision_Tree():
 
         return C45Tree
 
+    # 利用CART算法创建决策树
+    def CART_createTree(self, dataset, labels, test_dataset):
+        classList = [example[-1] for example in dataset]
+        if classList.count(classList[0]) == len(classList):
+            # 类别完全相同，停止划分
+            return classList[0]
+        if len(dataset[0]) == 1:
+            # 遍历完所有特征时返回出现次数最多的
+            return self.majorityCnt(classList)
+        bestFeat = self.CART_chooseBestFeatureToSplit(dataset)
+        # print(u"此时最优索引为："+str(bestFeat))
+        bestFeatLabel = labels[bestFeat]
+        print(u"此时最优索引为：" + (bestFeatLabel))
+        CARTTree = {bestFeatLabel: {}}
+        del (labels[bestFeat])
+        # 得到列表包括节点所有的属性值
+        featValues = [example[bestFeat] for example in dataset]
+        uniqueVals = set(featValues)
+
+        if self.pre_pruning:
+            ans = []
+            for index in range(len(test_dataset)):
+                ans.append(test_dataset[index][-1])
+            result_counter = Counter()
+            for vec in dataset:
+                result_counter[vec[-1]] += 1
+            leaf_output = result_counter.most_common(1)[0][0]
+            root_acc = self.cal_acc(
+                test_output=[leaf_output] * len(test_dataset), label=ans)
+            outputs = []
+            ans = []
+            for value in uniqueVals:
+                cut_testset = self.splitdataset(test_dataset, bestFeat, value)
+                cut_dataset = self.splitdataset(dataset, bestFeat, value)
+                for vec in cut_testset:
+                    ans.append(vec[-1])
+                result_counter = Counter()
+                for vec in cut_dataset:
+                    result_counter[vec[-1]] += 1
+                leaf_output = result_counter.most_common(1)[0][0]
+                outputs += [leaf_output] * len(cut_testset)
+            cut_acc = self.cal_acc(test_output=outputs, label=ans)
+
+            if cut_acc <= root_acc:
+                return leaf_output
+
+        for value in uniqueVals:
+            subLabels = labels[:]
+            CARTTree[bestFeatLabel][value] = self.CART_createTree(
+                self.splitdataset(dataset, bestFeat, value),
+                subLabels,
+                self.splitdataset(test_dataset, bestFeat, value))
+
+        if self.post_pruning:
+            tree_output = self.classifytest(CARTTree,
+                                            featLabels=[
+                                                '年龄段', '有工作', '有自己的房子', '信贷情况'],
+                                            testDataSet=test_dataset)
+            ans = []
+            for vec in test_dataset:
+                ans.append(vec[-1])
+            root_acc = self.cal_acc(tree_output, ans)
+            result_counter = Counter()
+            for vec in dataset:
+                result_counter[vec[-1]] += 1
+            leaf_output = result_counter.most_common(1)[0][0]
+            cut_acc = self.cal_acc([leaf_output] * len(test_dataset), ans)
+
+            if cut_acc >= root_acc:
+                return leaf_output
+
+        return CARTTree
+
     def classify(self, inputTree, featLabels, testVec):
         """
         输入：决策树，分类标签，测试数据
@@ -379,7 +473,7 @@ if __name__ == '__main__':
     T = Decision_Tree()
     dataset, labels = T.read_dataset(filename)
 
-    T.choice = input('请输入建树方式：1（ID3），2（C4.5）')
+    T.choice = input('请输入建树方式：1（ID3），2（C4.5），3（CART）：')
 
     print('下面开始创建相应的决策树-------')
 
@@ -398,7 +492,7 @@ if __name__ == '__main__':
         print("---------------------------------------------")
 
     # C4.5决策树
-    if T.choice == '2':
+    elif T.choice == '2':
         labels_tmp = labels[:]  # 拷贝，createTree会改变labels
         C45desicionTree = T.C45_createTree(
             dataset, labels_tmp, test_dataset=T.read_testset(testfile))
@@ -410,3 +504,20 @@ if __name__ == '__main__':
         print('测试数据集正确率：',
               100 * T.cal_acc(T.classifytest(C45desicionTree, labels, testSet), [ans[-1] for ans in testSet]), '%')
         print("---------------------------------------------")
+
+    # CART决策树
+    elif T.choice == '3':
+        labels_tmp = labels[:]  # 拷贝，createTree会改变labels
+        CARTdesicionTree = T.CART_createTree(
+            dataset, labels_tmp, test_dataset=T.read_testset(testfile))
+        print('CARTdesicionTree:\n', CARTdesicionTree)
+        testSet = T.read_testset(testfile)
+        print("下面为测试数据集结果：")
+        print('CART_TestSet_classifyResult:\n',
+              T.classifytest(CARTdesicionTree, labels, testSet))
+        print('测试数据集正确率：',
+              100 * T.cal_acc(T.classifytest(CARTdesicionTree, labels, testSet), [ans[-1] for ans in testSet]), '%')
+        print("---------------------------------------------")
+
+    else:
+        print('输入错误，请重新输入！')
