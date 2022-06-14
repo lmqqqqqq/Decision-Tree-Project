@@ -1,12 +1,12 @@
 from math import log
 import operator
 from collections import Counter
-import csv
-
+import pandas as pd
 
 class Decision_Tree():
     pre_pruning = True
     post_pruning = True
+    labels = None
     choice = '1'
 
     def read_dataset(self, filename):
@@ -21,32 +21,31 @@ class Decision_Tree():
         # read a csv file and convert it into dataset and labels
         dataset = []
         labels = []  # header
-        with open(filename, 'r', encoding='utf-8') as csvfile:
-            lines = csv.reader(csvfile)
-            dataset = list(lines)
-            labels = dataset.pop(0)
-
-        # convert data in dataset to specific code
-        for i in range(len(dataset)):
-            for j in range(len(dataset[i])):
-                if dataset[i][j] == '青年':
-                    dataset[i][j] = 0
-                elif dataset[i][j] == '中年':
-                    dataset[i][j] = 1
-                elif dataset[i][j] == '老年':
-                    dataset[i][j] = 2
-                elif dataset[i][j] == '否':
-                    dataset[i][j] = 0
-                elif dataset[i][j] == '是':
-                    dataset[i][j] = 1
-                elif dataset[i][j] == '一般':
-                    dataset[i][j] = 0
-                elif dataset[i][j] == '好':
-                    dataset[i][j] = 1
-                elif dataset[i][j] == '非常好':
-                    dataset[i][j] = 2
-                else:
-                    dataset[i][j] = int(dataset[i][j])
+        df = pd.read_csv(filename)
+        dataset = df.to_numpy().tolist()
+        labels = list(df.columns)
+        self.labels = labels 
+        # # convert data in dataset to specific code
+        # for i in range(len(dataset)):
+        #     for j in range(len(dataset[i])):
+        #         if dataset[i][j] == '青年':
+        #             dataset[i][j] = 0
+        #         elif dataset[i][j] == '中年':
+        #             dataset[i][j] = 1
+        #         elif dataset[i][j] == '老年':
+        #             dataset[i][j] = 2
+        #         elif dataset[i][j] == '否':
+        #             dataset[i][j] = 0
+        #         elif dataset[i][j] == '是':
+        #             dataset[i][j] = 1
+        #         elif dataset[i][j] == '一般':
+        #             dataset[i][j] = 0
+        #         elif dataset[i][j] == '好':
+        #             dataset[i][j] = 1
+        #         elif dataset[i][j] == '非常好':
+        #             dataset[i][j] = 2
+        #         else:
+        #             dataset[i][j] = int(dataset[i][j])
 
         return dataset, labels
 
@@ -60,34 +59,34 @@ class Decision_Tree():
         """
 
         # read a csv file and convert it into dataset and labels
-        dataset = []
-        labels = []  # header
-        with open(testfile, 'r', encoding='utf-8') as csvfile:
-            lines = csv.reader(csvfile)
-            dataset = list(lines)
-            labels = dataset.pop(0)
+        df = pd.read_csv(testfile)
+        dataset = df.to_numpy().tolist()
+        # with open(testfile, 'r', encoding='utf-8') as csvfile:
+            # lines = csv.reader(csvfile)
+            # dataset = list(lines)
+            # labels = dataset.pop(0)
 
         # convert data in dataset to specific code
-        for i in range(len(dataset)):
-            for j in range(len(dataset[i])):
-                if dataset[i][j] == '青年':
-                    dataset[i][j] = 0
-                elif dataset[i][j] == '中年':
-                    dataset[i][j] = 1
-                elif dataset[i][j] == '老年':
-                    dataset[i][j] = 2
-                elif dataset[i][j] == '否':
-                    dataset[i][j] = 0
-                elif dataset[i][j] == '是':
-                    dataset[i][j] = 1
-                elif dataset[i][j] == '一般':
-                    dataset[i][j] = 0
-                elif dataset[i][j] == '好':
-                    dataset[i][j] = 1
-                elif dataset[i][j] == '非常好':
-                    dataset[i][j] = 2
-                else:
-                    dataset[i][j] = int(dataset[i][j])
+        # for i in range(len(dataset)):
+        #     for j in range(len(dataset[i])):
+        #         if dataset[i][j] == '青年':
+        #             dataset[i][j] = 0
+        #         elif dataset[i][j] == '中年':
+        #             dataset[i][j] = 1
+        #         elif dataset[i][j] == '老年':
+        #             dataset[i][j] = 2
+        #         elif dataset[i][j] == '否':
+        #             dataset[i][j] = 0
+        #         elif dataset[i][j] == '是':
+        #             dataset[i][j] = 1
+        #         elif dataset[i][j] == '一般':
+        #             dataset[i][j] = 0
+        #         elif dataset[i][j] == '好':
+        #             dataset[i][j] = 1
+        #         elif dataset[i][j] == '非常好':
+        #             dataset[i][j] = 2
+        #         else:
+        #             dataset[i][j] = int(dataset[i][j])
 
         return dataset
 
@@ -133,11 +132,11 @@ class Decision_Tree():
                 p = len(subdataset) / float(len(dataset))
                 newEnt += p * self.cal_entropy(subdataset)
             infoGain = baseEnt - newEnt
-            print(u"ID3中第%d个特征的信息增益为：%.3f" % (i, infoGain))
+            # print(u"ID3中第%d个特征的信息增益为：%.3f" % (i, infoGain))
             if (infoGain > bestInfoGain):
                 bestInfoGain = infoGain  # 计算最好的信息增益
                 bestFeature = i
-        return bestFeature
+        return bestFeature,bestInfoGain
 
     # 利用C4.5算法选择最优划分属性
     def C45_chooseBestFeatureToSplit(self, dataset):
@@ -159,11 +158,11 @@ class Decision_Tree():
             if (IV == 0):
                 continue
             infoGain_ratio = infoGain / IV  # 这个feature的infoGain_ratio
-            print(u"C4.5中第%d个特征的信息增益率为：%.3f" % (i, infoGain_ratio))
+            # print(u"C4.5中第%d个特征的信息增益率为：%.3f" % (i, infoGain_ratio))
             if (infoGain_ratio > bestInfoGain_ratio):  # 选择最大的gain ratio
                 bestInfoGain_ratio = infoGain_ratio
                 bestFeature = i  # 选择最大的gain ratio对应的feature
-        return bestFeature
+        return bestFeature,infoGain_ratio
 
     # 利用CART算法选择最优划分属性
     def CART_chooseBestFeatureToSplit(self, dataset):
@@ -180,11 +179,11 @@ class Decision_Tree():
                 subp = len(self.splitdataset(subdataset, -1, 0)) / \
                     float(len(subdataset))
                 gini += p * (1.0 - pow(subp, 2) - pow(1 - subp, 2))
-            print(u"CART中第%d个特征的基尼值为：%.3f" % (i, gini))
+            # print(u"CART中第%d个特征的基尼值为：%.3f" % (i, gini))
             if (gini < bestGini):
                 bestGini = gini
                 bestFeature = i
-        return bestFeature
+        return bestFeature,bestGini
 
     # 以样本中的多数确定叶子结点的分类
     def majorityCnt(self, classList):
@@ -209,11 +208,11 @@ class Decision_Tree():
         if len(dataset[0]) == 1:
             # 遍历完所有特征时返回出现次数最多的
             return self.majorityCnt(classList)
-        bestFeat = self.ID3_chooseBestFeatureToSplit(dataset)
+        bestFeat,infoGain = self.ID3_chooseBestFeatureToSplit(dataset)
         bestFeatLabel = labels[bestFeat]
-        print(u"此时最优索引为：" + (bestFeatLabel))
+        # print(u"此时最优索引为：" + (bestFeatLabel))
 
-        ID3Tree = {bestFeatLabel: {}}
+        ID3Tree = {(bestFeatLabel,f"{infoGain:.2f}"): {}}
         del (labels[bestFeat])
         # 得到列表包括节点所有的属性值
         featValues = [example[bestFeat] for example in dataset]
@@ -250,7 +249,7 @@ class Decision_Tree():
 
         for value in uniqueVals:  # 此时不进行预剪枝，对该结点进行划分
             subLabels = labels[:]
-            ID3Tree[bestFeatLabel][value] = self.ID3_createTree(
+            ID3Tree[(bestFeatLabel,f"{infoGain:.2f}")][value] = self.ID3_createTree(
                 self.splitdataset(dataset, bestFeat, value),
                 subLabels,
                 self.splitdataset(test_dataset, bestFeat, value))
@@ -258,8 +257,7 @@ class Decision_Tree():
         # 进行后剪枝
         if self.post_pruning:
             tree_output = self.classifytest(ID3Tree,
-                                            featLabels=[
-                                                '年龄段', '有工作', '有自己的房子', '信贷情况'],
+                                            featLabels=self.labels,
                                             testDataSet=test_dataset)
             ans = []
             for vec in test_dataset:
@@ -286,10 +284,10 @@ class Decision_Tree():
         if len(dataset[0]) == 1:
             # 遍历完所有特征时返回出现次数最多的
             return self.majorityCnt(classList)
-        bestFeat = self.C45_chooseBestFeatureToSplit(dataset)
+        bestFeat,infoGain = self.C45_chooseBestFeatureToSplit(dataset)
         bestFeatLabel = labels[bestFeat]
-        print(u"此时最优索引为：" + (bestFeatLabel))
-        C45Tree = {bestFeatLabel: {}}
+        # print(u"此时最优索引为：" + (bestFeatLabel))
+        C45Tree = {(bestFeatLabel,f"{infoGain:.2f}"): {}}
         del (labels[bestFeat])
         # 得到列表包括节点所有的属性值
         featValues = [example[bestFeat] for example in dataset]
@@ -326,7 +324,7 @@ class Decision_Tree():
 
         for value in uniqueVals:  # 此时不进行预剪枝，对该结点进行划分
             subLabels = labels[:]
-            C45Tree[bestFeatLabel][value] = self.C45_createTree(
+            C45Tree[(bestFeatLabel,f"{infoGain:.2f}")][value] = self.C45_createTree(
                 self.splitdataset(dataset, bestFeat, value),
                 subLabels,
                 self.splitdataset(test_dataset, bestFeat, value))
@@ -334,8 +332,7 @@ class Decision_Tree():
         # 进行后剪枝
         if self.post_pruning:
             tree_output = self.classifytest(C45Tree,
-                                            featLabels=[
-                                                '年龄段', '有工作', '有自己的房子', '信贷情况'],
+                                            featLabels=self.labels,
                                             testDataSet=test_dataset)
             ans = []
             for vec in test_dataset:
@@ -362,11 +359,11 @@ class Decision_Tree():
         if len(dataset[0]) == 1:
             # 遍历完所有特征时返回出现次数最多的
             return self.majorityCnt(classList)
-        bestFeat = self.CART_chooseBestFeatureToSplit(dataset)
+        bestFeat,infoGain = self.CART_chooseBestFeatureToSplit(dataset)
         # print(u"此时最优索引为："+str(bestFeat))
         bestFeatLabel = labels[bestFeat]
-        print(u"此时最优索引为：" + (bestFeatLabel))
-        CARTTree = {bestFeatLabel: {}}
+        # print(u"此时最优索引为：" + (bestFeatLabel))
+        CARTTree = {(bestFeatLabel,f"{infoGain:.2f}"): {}}
         del (labels[bestFeat])
         # 得到列表包括节点所有的属性值
         featValues = [example[bestFeat] for example in dataset]
@@ -401,15 +398,15 @@ class Decision_Tree():
 
         for value in uniqueVals:
             subLabels = labels[:]
-            CARTTree[bestFeatLabel][value] = self.CART_createTree(
+            CARTTree[(bestFeatLabel,f"{infoGain:.2f}")][value] = self.CART_createTree(
                 self.splitdataset(dataset, bestFeat, value),
                 subLabels,
                 self.splitdataset(test_dataset, bestFeat, value))
 
         if self.post_pruning:
             tree_output = self.classifytest(CARTTree,
-                                            featLabels=[
-                                                '年龄段', '有工作', '有自己的房子', '信贷情况'],
+                                            featLabels=self.labels, #[
+                                                # '年龄段', '有工作', '有自己的房子', '信贷情况'],
                                             testDataSet=test_dataset)
             ans = []
             for vec in test_dataset:
@@ -434,7 +431,7 @@ class Decision_Tree():
         """
         firstStr = list(inputTree.keys())[0]
         secondDict = inputTree[firstStr]
-        featIndex = featLabels.index(firstStr)
+        featIndex = featLabels.index(firstStr[0])
         classLabel = '0'
         for key in secondDict.keys():
             if testVec[featIndex] == key:
@@ -467,11 +464,13 @@ class Decision_Tree():
 
 
 if __name__ == '__main__':
-    filename = 'dataset.csv'
-    testfile = 'testset.csv'
+    filename = 'dataset.txt'
+    testfile = 'testset.txt'
 
     T = Decision_Tree()
     dataset, labels = T.read_dataset(filename)
+    print(dataset)
+    print(labels)
 
     T.choice = input('请输入建树方式：1（ID3），2（C4.5），3（CART）：')
 
