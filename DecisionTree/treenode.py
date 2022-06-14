@@ -7,6 +7,8 @@ class Node:
         self.x = -1
         self.y = 0
         self.offset = 0
+        self.thread = None
+        self.mod = 0
         self.ancestor = self
         self.children = [] 
         self.change = self.shift = 0
@@ -31,6 +33,23 @@ class Node:
             self._lmost_sibling = self.parent.children[0] 
         return self._lmost_sibling
     
+    def left(self):
+        return self.thread or len(self.children and self.children[0])
+
+    def right(self):
+        return self.thread or len(self.children) and self.children[-1]
+    
+    def lbrother(self):
+        n = None 
+        if self.parent:
+            for node in self.parent.children:
+                if node == self: return n
+                else:            n = node
+        return n
+    
+    def __str__(self): return "%s: x=%s mod=%s" % (self.tree, self.x, self.mod)
+    def __repr__(self):return self.__str__()
+    
     leftmost_sibling = property(get_lmost_sibling)
     
     def print(self):
@@ -39,21 +58,26 @@ class Node:
             print(f"value:{self.value}")
         print(f"gain:{self.gain}")
         print(f"isleaf:{self.isLeaf}")
+        print(f"x:{self.x},y:{self.y}")
+        print("-------------")
         for node in self.children:
             node.print()
 
     
 # 由节点数据结构构成的决策树
 class TreeNode:
-    def __init__(self) -> None:
+    def __init__(self,d=None) -> None:
         self.root = None
+        if d is not None:
+            self.fromDict(d)
+            self.calculatePosition()
     
-    def fromDict(self,dict):
-        self.root = TreeNode._fromDict(dict,None,None,0,1)
+    def fromDict(self,d):
+        self.root = TreeNode._fromDict(d,None,None,0,1)
     
     def calculatePosition(self):
         self.root = TreeNode.buchheim(self.root)
-
+    
     def print(self):
         if self.root is not None:
             self.root.print()
@@ -74,10 +98,11 @@ class TreeNode:
             root.parent = parent
             root.y = depth
             root.number = number
-            for index,dicts in enumerate(list(enumerate(v))):
-                key,value = dicts  # '0': {} ; '1':{}
+            index = 0
+            for key,value in v.items():
                 nextFeature = key 
                 root.children.append(TreeNode._fromDict(value,nextFeature,root,depth+1,index+1))
+                index+=1
         
         else :
             root.name = d # 值为分类结果
@@ -92,6 +117,8 @@ class TreeNode:
     @staticmethod
     def buchheim(tree):
         dt = TreeNode.firstwalk(tree)
+        # TODO:
+        # dt.print()
         TreeNode.second_walk(dt)
         return dt
 
@@ -181,7 +208,7 @@ class TreeNode:
         else:
             return default_ancestor
     @staticmethod
-    def second_walk(v, m=0, depth=0):
+    def second_walk(v, m=0, depth=0,min=None):
         v.x += m
         v.y = depth
 
@@ -209,6 +236,5 @@ if __name__ == "__main__":
     # print('测试数据集正确率：',
     #         100 * T.cal_acc(T.classifytest(ID3desicionTree, labels, testSet), [ans[-1] for ans in testSet]), '%')
     # print("---------------------------------------------")
-    testtree = TreeNode()
-    testtree.fromDict(ID3desicionTree)
+    testtree = TreeNode(ID3desicionTree)
     testtree.print()
