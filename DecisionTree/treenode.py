@@ -68,6 +68,7 @@ class Node:
 class TreeNode:
     def __init__(self,d=None) -> None:
         self.root = None
+        self.maxX = 0
         if d is not None:
             self.fromDict(d)
             self.calculatePosition()
@@ -77,10 +78,18 @@ class TreeNode:
     
     def calculatePosition(self):
         self.root = TreeNode.buchheim(self.root)
+        self.maxX = TreeNode.findMaxX(self.root)
     
     def print(self):
         if self.root is not None:
             self.root.print()
+
+    @staticmethod 
+    def findMaxX(root:Node):
+        x = root.x 
+        for child in root.children:
+            x = max(x,TreeNode.findMaxX(child))
+        return x
 
     @staticmethod
     def _fromDict(d,feature,parent,depth=0,number=1): 

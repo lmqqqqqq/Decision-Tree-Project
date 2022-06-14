@@ -21,11 +21,11 @@ class Canvas(QGraphicsView):
         self.scene.setSceneRect(0,0,1000,1000)
         self.setScene(self.scene)
     
-    def _recursivePlot(self,node:Node,edge:GraphicEdge):
-        nodeitem = NodeItem(node)
+    def _recursivePlot(self,maxX,node:Node,edge:GraphicEdge):
+        nodeitem = NodeItem(maxX,node)
         if edge is not None:
             edge.set_dst(nodeitem)
-            nodeitem.dstedges.append(edge)
+            # nodeitem.dstedges.append(edge)
             self.scene.addItem(edge)
 
         # TODO: plot test
@@ -35,12 +35,10 @@ class Canvas(QGraphicsView):
             if not node.isLeaf:
                 newedge =GraphicEdge()
                 newedge.set_src(nodeitem)
-                nodeitem.srcedges.append(newedge)
-            self._recursivePlot(child,newedge)
+                # nodeitem.srcedges.append(newedge)
+            self._recursivePlot(maxX,child,newedge)
         
-    def plotTree(self,tree:TreeNode):
-        self._recursivePlot(tree.root,None)
-        # nodeitem = NodeItem(tree.root)
-        # self.scene.addItem(nodeitem)
+    def plotTree(self,maxX,tree:TreeNode):
+        self._recursivePlot(maxX,tree.root,None)
         self.setScene(self.scene)
 

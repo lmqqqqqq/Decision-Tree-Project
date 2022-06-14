@@ -2,6 +2,7 @@ from math import log
 import operator
 from collections import Counter
 import pandas as pd
+import numpy as np
 
 class Decision_Tree():
     pre_pruning = True
@@ -22,6 +23,24 @@ class Decision_Tree():
         dataset = []
         labels = []  # header
         df = pd.read_csv(filename)
+        for column in list(df.columns):
+            if df[column].dtype ==object :
+                fact,index = pd.factorize(df[column])
+                df[column] = fact 
+            if df[column].dtype == np.float64:
+                mean = df[column].mean()
+                bool_index = df[column] > mean
+                df[column][bool_index] = 1
+                df[column][~bool_index] = 0
+
+        if filename[-9:] == "train.csv":
+            df = df.iloc[:,1:]
+            order = list(df.columns)
+            order = [*order[1:],order[0]]
+            df = df[order]
+        
+        df = df.astype(np.int32)
+
         dataset = df.to_numpy().tolist()
         labels = list(df.columns)
         self.labels = labels 
@@ -60,6 +79,22 @@ class Decision_Tree():
 
         # read a csv file and convert it into dataset and labels
         df = pd.read_csv(testfile)
+        for column in list(df.columns):
+            if df[column].dtype ==object :
+                fact,index = pd.factorize(df[column])
+                df[column] = fact 
+            if df[column].dtype == np.float64:
+                mean = df[column].mean()
+                bool_index = df[column] > mean
+                df[column][bool_index] = 1
+                df[column][~bool_index] = 0
+
+        if testfile[-8:] == "test.csv":
+            df = df.iloc[:,1:]
+            order = list(df.columns)
+            df = df[order]
+        
+        df = df.astype(np.int32)
         dataset = df.to_numpy().tolist()
         # with open(testfile, 'r', encoding='utf-8') as csvfile:
             # lines = csv.reader(csvfile)

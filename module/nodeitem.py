@@ -6,18 +6,24 @@ from DecisionTree import Node
 from .edgeitem import GraphicEdge
 
 class NodeItem(QGraphicsItem):
-    def __init__(self,node:Node=None,parent=None):
+    def __init__(self,maxX,node:Node=None,parent=None):
         super().__init__(parent)
         self.setFlag(QGraphicsItem.ItemIsMovable,True)
         self.setFlag(QGraphicsItem.ItemIsSelectable,True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges,True)
         self.setFlag(QGraphicsItem.ItemIsFocusable,True)
+        self.state = 0 # 0: not selected, 1: selected
         self.x = 0
         self.y = 0
-        self.width  = 120 
+        self.h_interval =max(min(120,1000/maxX),40)
+        self.v_interval =100 
+        self.brush = QBrush()
+        self.brush.setColor(QColor(220,220,220))
+        self.brush.setStyle(Qt.Dense1Pattern)
+        self.maxX = maxX
+
+        self.width  = self.h_interval / 1.2
         self.height = 50 
-        self.h_interval = 200
-        self.v_interval = 100
         self.srcedges = [] 
         self.dstedges = []
         if node is not None: 
@@ -37,9 +43,6 @@ class NodeItem(QGraphicsItem):
         self.value = node.value 
    
     def paint(self,painter:QPainter,style,*args,**kawrgs):
-        self.brush = QBrush()
-        self.brush.setColor(QColor(220,220,220))
-        self.brush.setStyle(Qt.Dense1Pattern)
         painter.setBrush(self.brush)
 
         pen = QPen()
@@ -51,9 +54,10 @@ class NodeItem(QGraphicsItem):
         textHeight = 20
         yinterval = 5
         xinterval = 15
-        painter.drawText(self.x,self.y,self.width,textHeight,Qt.AlignHCenter,f"{self.name}")
-        if self.gain is not None:
-            painter.drawText(self.x+xinterval,self.y+textHeight+yinterval,f"InfoGain: {self.gain}")
+        if self.maxX <= 20 : 
+            painter.drawText(self.x,self.y,self.width,textHeight,Qt.AlignHCenter,f"{self.name}")
+            if self.gain is not None:
+                painter.drawText(self.x+xinterval,self.y+textHeight+yinterval,f"InfoGain: {self.gain}")
         # painter.drawText(self.x,self.y+textHeight*2+yinterval,self.width,textHeight,Qt.AlignLeft,f"{self.name}")
 
     def print(self):
@@ -62,11 +66,14 @@ class NodeItem(QGraphicsItem):
         print(self.gain)
         print("-------------")
     
-    def mouseMoveEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
-        if self.isSelected():
-            for edge in self.srcedges:
-                edge.set_src(self)
-            for edge in self.dstedges:
-                edge.set_dst(self)
-        super().mouseMoveEvent(event)
+    # def mousePressEvent(self, event: PySide6.QtWidgets.QGraphicsSceneMouseEvent) -> None:
+    #     if self.isSelected():
+    #         self.state = ~self.state 
+
+    #         if self.state == 0:
+    #             self.brush.setColor(QColor(220,220,220))
+    #         else:
+    #             self.brush.setColor(QColor(180,180,180))
+    #     super().mousePressEvent(event)
+
             
