@@ -20,7 +20,7 @@ class Decision_Tree():
         all_lines = fr.readlines()  # list形式,每行为1个str
         labels = ['年龄段', '有工作', '有自己的房子', '信贷情况']
         dataset = []
-        for line in all_lines[0:]:
+        for line in all_lines[1:]:
             line = line.strip().split(',')  # 以逗号为分割符拆分列表
             dataset.append(line)
         return dataset, labels
@@ -36,7 +36,7 @@ class Decision_Tree():
         fr = open(testfile, 'r')
         all_lines = fr.readlines()
         testset = []
-        for line in all_lines[0:]:
+        for line in all_lines[1:]:
             line = line.strip().split(',')  # 以逗号为分割符拆分列表
             testset.append(line)
         return testset
@@ -82,11 +82,11 @@ class Decision_Tree():
                 p = len(subdataset) / float(len(dataset))
                 newEnt += p * self.cal_entropy(subdataset)
             infoGain = baseEnt - newEnt
-            print(u"ID3中第%d个特征的信息增益为：%.3f" % (i, infoGain))
+            # print(u"ID3中第%d个特征的信息增益为：%.3f" % (i, infoGain))
             if (infoGain > bestInfoGain):
                 bestInfoGain = infoGain  # 计算最好的信息增益
                 bestFeature = i
-        return bestFeature
+        return bestFeature,bestInfoGain
 
     # 利用C4.5算法选择最优划分属性
     def C45_chooseBestFeatureToSplit(self, dataset):
@@ -108,11 +108,11 @@ class Decision_Tree():
             if (IV == 0):
                 continue
             infoGain_ratio = infoGain / IV  # 这个feature的infoGain_ratio
-            print(u"C4.5中第%d个特征的信息增益率为：%.3f" % (i, infoGain_ratio))
+            # print(u"C4.5中第%d个特征的信息增益率为：%.3f" % (i, infoGain_ratio))
             if (infoGain_ratio > bestInfoGain_ratio):  # 选择最大的gain ratio
                 bestInfoGain_ratio = infoGain_ratio
                 bestFeature = i  # 选择最大的gain ratio对应的feature
-        return bestFeature
+        return bestFeature,bestInfoGain_ratio
 
     # 以样本中的多数确定叶子结点的分类
     def majorityCnt(self, classList):
@@ -136,11 +136,11 @@ class Decision_Tree():
         if len(dataset[0]) == 1:
             # 遍历完所有特征时返回出现次数最多的
             return self.majorityCnt(classList)
-        bestFeat = self.ID3_chooseBestFeatureToSplit(dataset)
+        bestFeat,bestInfoGain = self.ID3_chooseBestFeatureToSplit(dataset)
         bestFeatLabel = labels[bestFeat]
-        print(u"此时最优索引为：" + (bestFeatLabel))
+        # print(u"此时最优索引为：" + (bestFeatLabel))
 
-        ID3Tree = {bestFeatLabel: {}}
+        ID3Tree = {(bestFeatLabel,f"{bestInfoGain:.2f}"): {}}
         del (labels[bestFeat])
         # 得到列表包括节点所有的属性值
         featValues = [example[bestFeat] for example in dataset]
@@ -175,7 +175,7 @@ class Decision_Tree():
 
         for value in uniqueVals:  # 此时不进行预剪枝，对该结点进行划分
             subLabels = labels[:]
-            ID3Tree[bestFeatLabel][value] = self.ID3_createTree(
+            ID3Tree[(bestFeatLabel,f"{bestInfoGain:.2f}")][value] = self.ID3_createTree(
                 self.splitdataset(dataset, bestFeat, value),
                 subLabels,
                 self.splitdataset(test_dataset, bestFeat, value))
@@ -209,10 +209,10 @@ class Decision_Tree():
         if len(dataset[0]) == 1:
             # 遍历完所有特征时返回出现次数最多的
             return self.majorityCnt(classList)
-        bestFeat = self.C45_chooseBestFeatureToSplit(dataset)
+        bestFeat,infoGainRatio = self.C45_chooseBestFeatureToSplit(dataset)
         bestFeatLabel = labels[bestFeat]
-        print(u"此时最优索引为：" + (bestFeatLabel))
-        C45Tree = {bestFeatLabel: {}}
+        # print(u"此时最优索引为：" + (bestFeatLabel))
+        C45Tree = {(bestFeatLabel,f"{infoGainRatio:.2f}"): {}}
         del (labels[bestFeat])
         # 得到列表包括节点所有的属性值
         featValues = [example[bestFeat] for example in dataset]
@@ -247,7 +247,7 @@ class Decision_Tree():
 
         for value in uniqueVals:  # 此时不进行预剪枝，对该结点进行划分
             subLabels = labels[:]
-            C45Tree[bestFeatLabel][value] = self.C45_createTree(
+            C45Tree[(bestFeatLabel,f"{infoGainRatio:.2f}")][value] = self.C45_createTree(
                 self.splitdataset(dataset, bestFeat, value),
                 subLabels,
                 self.splitdataset(test_dataset, bestFeat, value))
@@ -280,7 +280,7 @@ class Decision_Tree():
         """
         firstStr = list(inputTree.keys())[0]
         secondDict = inputTree[firstStr]
-        featIndex = featLabels.index(firstStr)
+        featIndex = featLabels.index(firstStr[0])
         classLabel = '0'
         for key in secondDict.keys():
             if testVec[featIndex] == key:
