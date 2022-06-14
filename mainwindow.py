@@ -4,10 +4,11 @@ from DecisionTree.tree import Decision_Tree
 from mainwindow_ui import Ui_MainWindow
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import QApplication,QFileDialog
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot,QStringListModel
 import pandas as pd
 import numpy as np
 import time
+from BN import *
 
 from module import TableModel,TreeNode,Node,Canvas
 
@@ -31,8 +32,60 @@ class MainWindow(QMainWindow):
         self.ui.pushButtonTest.clicked.connect(self.openTestFileDialog)
         self.ui.pushButtonBuildTree.clicked.connect(self.buildTree)
         self.ui.pushButtonRunTest.clicked.connect(self.runTest)
-    
+        self.ui.pushButtonDir.clicked.connect(self.openDir)
+        self.ui.listView.clicked.connect(self.on_clicked_list)
+        self.ui.pushButtongenerateBN.clicked.connect(self.generateBN)
+        self.ui.pushButtonInfer.clicked.connect(self.infer)
+        self.ui.pushButtonQuery.clicked.connect(self.openQuery)
+
     """slots"""
+    @Slot()
+    def openQuery(self):
+        filename = QFileDialog.getOpenFileName(self,"Open File","./Query")
+        if filename[0]:
+            filename = filename[0] 
+            self.queryFile = filename
+            self.query = Query()
+            self.query.fromFile(filename)
+            self.ui.labelcond.setText(f"{str(self.query.conditions)}")
+            self.ui.labelvar.setText(f"{str(self.query.vars)}")
+
+
+    @Slot()
+    def infer(self):
+        prob = self.bayesNet.ask(self.query)
+        self.ui.lineEditprob.setText(str(prob))
+
+    @Slot()
+    def generateBN(self):
+        pass # plotting 
+
+    @Slot()
+    def openDir(self):
+        import os
+        dir = "./netstruct"
+        folderName = QFileDialog.getExistingDirectory(self,"Open Folder",dir)
+        print(folderName)
+        if folderName:
+            self.folder = folderName
+            self.bayesNet = BN()
+            self.bayesNet.fromFolder(self.folder)
+            self.files = os.listdir(self.folder)
+            # 设置文件夹内容
+            listModel = QStringListModel()
+            listModel.setStringList(self.files)
+            self.ui.listView.setModel(listModel)
+
+    @Slot()
+    def on_clicked_list(self,item):
+        index = item.row()
+        filename = self.files[index]
+        fullpath = f"{self.folder}/{filename}"
+        df = pd.read_csv(fullpath)
+        model = TableModel(df)
+        self.ui.tableView_2.setModel(model)
+
+
     @Slot()
     def openTrainFileDialog(self):
         home_dir = "./DecisionTree"

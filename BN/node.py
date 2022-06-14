@@ -1,6 +1,6 @@
 import pandas as pd 
 
-class Node(): 
+class bayesNode(): 
     """Bayesian Network中的节点"""
     # variables 
     # conditions = list() # string的list，记录所有“条件”
@@ -13,7 +13,6 @@ class Node():
         self.data :pd.DataFrame = None
         self.father = list()  # 父节点
         self.children = list() # 孩子结点
-        pass
 
     def fromFile(self,path):
         df = pd.read_csv(path)

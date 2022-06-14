@@ -1,8 +1,8 @@
 """Bayesian Netowrk Definition""" 
 import os
 import pandas as pd
-from factor import Factor
-from node import Node
+from .factor import Factor
+from .node import bayesNode
 import numpy as np
 
 class Query():
@@ -40,7 +40,7 @@ class BN():
         files = os.listdir(path)
         for file in files: 
             # 构建 nodes 信息
-            node = Node()
+            node = bayesNode()
             node.fromFile(f"{path}/{file}")
             self.nodes.append(node)
             self.nameDict[node.name] = len(self.nodes)-1 

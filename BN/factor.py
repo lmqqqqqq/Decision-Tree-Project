@@ -1,6 +1,6 @@
 import numpy as np 
 import pandas as pd
-from node import Node
+from .node import bayesNode
 
 class Factor():
     def __init__(self,df:pd.DataFrame = None) -> None:
@@ -62,7 +62,7 @@ class Factor():
         # self.data = self.data.rename(columns = {lastname:"Value"})
    
 
-    def fromNode(self,node:Node,conditions:dict):
+    def fromNode(self,node:bayesNode,conditions:dict):
         # self.data = node.data
         vars = node.data.columns.tolist()
         # self.data = self.data.rename(columns={lastname:"Value"})
@@ -114,7 +114,7 @@ class Factor():
 
 if __name__ == "__main__":
 
-    n = Node()
+    n = bayesNode()
     n.fromFile("./BN/a.csv")
     f1 = Factor()
     f1.fromNode(n,None)

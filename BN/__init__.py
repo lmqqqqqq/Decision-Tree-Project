@@ -1,3 +1,3 @@
-from BN import * 
-from factor import * 
-from node import *
+from BN.BN import * 
+from BN.factor import * 
+from BN.node import *
