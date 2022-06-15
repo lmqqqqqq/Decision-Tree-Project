@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(830, 709)
+        MainWindow.resize(1196, 638)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -102,6 +102,7 @@ class Ui_MainWindow(object):
         self.tableViewTrain.setMinimumSize(QSize(0, 0))
         self.tableViewTrain.setMaximumSize(QSize(300, 16777215))
         self.tableViewTrain.setStyleSheet(u"")
+        self.tableViewTrain.setFrameShadow(QFrame.Plain)
         self.tableViewTrain.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
         self.tableViewTrain.horizontalHeader().setMinimumSectionSize(10)
         self.tableViewTrain.horizontalHeader().setDefaultSectionSize(40)
@@ -133,6 +134,7 @@ class Ui_MainWindow(object):
         sizePolicy1.setHeightForWidth(self.tableViewTest.sizePolicy().hasHeightForWidth())
         self.tableViewTest.setSizePolicy(sizePolicy1)
         self.tableViewTest.setMaximumSize(QSize(300, 16777215))
+        self.tableViewTest.setFrameShadow(QFrame.Plain)
         self.tableViewTest.horizontalHeader().setMinimumSectionSize(10)
         self.tableViewTest.horizontalHeader().setDefaultSectionSize(40)
         self.tableViewTest.verticalHeader().setMinimumSectionSize(10)
@@ -244,7 +246,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.canvas = QWidget()
         self.canvas.setObjectName(u"canvas")
-        self.canvas.setGeometry(QRect(0, 0, 185, 578))
+        self.canvas.setGeometry(QRect(0, 0, 551, 507))
         self.horizontalLayout_7 = QHBoxLayout(self.canvas)
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.graphicsView = Canvas(self.canvas)
@@ -558,6 +560,9 @@ class Ui_MainWindow(object):
 
         self.labelvar = QLabel(self.tab_3)
         self.labelvar.setObjectName(u"labelvar")
+        self.labelvar.setStyleSheet(u"border-color: rgb(81, 81, 81);")
+        self.labelvar.setFrameShape(QFrame.Panel)
+        self.labelvar.setFrameShadow(QFrame.Sunken)
 
         self.verticalLayout_10.addWidget(self.labelvar)
 
@@ -568,6 +573,8 @@ class Ui_MainWindow(object):
 
         self.labelcond = QLabel(self.tab_3)
         self.labelcond.setObjectName(u"labelcond")
+        self.labelcond.setFrameShape(QFrame.Panel)
+        self.labelcond.setFrameShadow(QFrame.Sunken)
 
         self.verticalLayout_10.addWidget(self.labelcond)
 
@@ -600,10 +607,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_9 = QVBoxLayout()
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
-        self.graphicsView_2 = QGraphicsView(self.tabBN)
-        self.graphicsView_2.setObjectName(u"graphicsView_2")
+        self.graphicsViewBN = Canvas(self.tabBN)
+        self.graphicsViewBN.setObjectName(u"graphicsViewBN")
 
-        self.verticalLayout_9.addWidget(self.graphicsView_2)
+        self.verticalLayout_9.addWidget(self.graphicsViewBN)
 
 
         self.horizontalLayout_11.addLayout(self.verticalLayout_9)
@@ -618,7 +625,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 830, 22))
+        self.menubar.setGeometry(QRect(0, 0, 1196, 22))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -626,7 +633,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget_2.setCurrentIndex(1)
+        self.tabWidget_2.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
         self.comboTreeType.setCurrentIndex(0)
         self.tabWidget_3.setCurrentIndex(1)

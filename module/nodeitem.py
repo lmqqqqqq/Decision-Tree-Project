@@ -4,9 +4,9 @@ from PySide6.QtCore import Qt,QRectF,QPointF
 import PySide6
 from DecisionTree import Node
 from .edgeitem import GraphicEdge
-
+from typing import Optional
 class NodeItem(QGraphicsItem):
-    def __init__(self,maxX,node:Node=None,parent=None):
+    def __init__(self,maxX,node:Node=None,parent=None,isBayes=False):
         super().__init__(parent)
         self.setFlag(QGraphicsItem.ItemIsMovable,True)
         self.setFlag(QGraphicsItem.ItemIsSelectable,True)
@@ -21,6 +21,7 @@ class NodeItem(QGraphicsItem):
         self.brush.setColor(QColor(220,220,220))
         self.brush.setStyle(Qt.Dense1Pattern)
         self.maxX = maxX
+        self.isBayes = isBayes
 
         self.width  = self.h_interval / 1.2
         self.height = 50 
@@ -41,8 +42,13 @@ class NodeItem(QGraphicsItem):
         self.name = node.name
         self.gain = node.gain 
         self.value = node.value 
+    
+    def fromBayesNode(self,node):
+        self.x = node.x * self.h_interval+100
+        self.y = int(node.y * self.v_interval+50)
+        self.name = node.name
    
-    def paint(self,painter:QPainter,style,*args,**kawrgs):
+    def paint(self, painter: PySide6.QtGui.QPainter, option: PySide6.QtWidgets.QStyleOptionGraphicsItem, widget: Optional[PySide6.QtWidgets.QWidget] = ...) -> None:
         painter.setBrush(self.brush)
 
         pen = QPen()
@@ -54,10 +60,13 @@ class NodeItem(QGraphicsItem):
         textHeight = 20
         yinterval = 5
         xinterval = 15
-        if self.maxX <= 20 : 
+        if self.isBayes:
             painter.drawText(self.x,self.y,self.width,textHeight,Qt.AlignHCenter,f"{self.name}")
-            if self.gain is not None:
-                painter.drawText(self.x+xinterval,self.y+textHeight+yinterval,f"InfoGain: {self.gain}")
+        else:
+            if self.maxX <= 20 : 
+                painter.drawText(self.x,self.y,self.width,textHeight,Qt.AlignHCenter,f"{self.name}")
+                if self.gain is not None:
+                    painter.drawText(self.x+xinterval,self.y+textHeight+yinterval,f"InfoGain: {self.gain}")
         # painter.drawText(self.x,self.y+textHeight*2+yinterval,self.width,textHeight,Qt.AlignLeft,f"{self.name}")
 
     def print(self):

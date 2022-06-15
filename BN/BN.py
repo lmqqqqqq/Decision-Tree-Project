@@ -25,13 +25,18 @@ class Query():
     def print(self):
         print(self.conditions)
         print(self.vars)
-
+import random
 class BN():
 
     def __init__(self):
         self.names = list() # list of all names in BN 
         self.nodes = list() # list of all nodes in BN 
         self.nameDict = dict() # dict : node name ->  node index in nodes
+    
+    def computePosition(self):
+        for node in self.nodes: 
+            node.x = random.randint(1,10)
+            node.y = random.randint(1,10)
 
     def fromFolder(self,path): 
         """
@@ -55,6 +60,8 @@ class BN():
                 # print(self.nameDict[condition])
                 node.father.append(self.nameDict[condition]) # father 存储索引
                 self.nodes[self.nameDict[condition]].children.append(index) # children 存储索引
+
+        self.computePosition()
 
     def print(self):
         for node in self.nodes:

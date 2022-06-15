@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButtonBuildTree.clicked.connect(self.buildTree)
         self.ui.pushButtonRunTest.clicked.connect(self.runTest)
         self.ui.pushButtonDir.clicked.connect(self.openDir)
-        self.ui.listView.clicked.connect(self.on_clicked_list)
+        self.ui.listView.clicked.connect(self.clicklist)
         self.ui.pushButtongenerateBN.clicked.connect(self.generateBN)
         self.ui.pushButtonInfer.clicked.connect(self.infer)
         self.ui.pushButtonQuery.clicked.connect(self.openQuery)
@@ -58,7 +58,9 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def generateBN(self):
-        pass # plotting 
+        if self.ui.graphicsViewBN.scene is not None:
+            self.ui.graphicsViewBN.scene.clear()
+        self.ui.graphicsViewBN.plotBN(self.bayesNet)
 
     @Slot()
     def openDir(self):
@@ -77,7 +79,7 @@ class MainWindow(QMainWindow):
             self.ui.listView.setModel(listModel)
 
     @Slot()
-    def on_clicked_list(self,item):
+    def clicklist(self,item):
         index = item.row()
         filename = self.files[index]
         fullpath = f"{self.folder}/{filename}"

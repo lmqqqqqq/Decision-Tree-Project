@@ -41,4 +41,15 @@ class Canvas(QGraphicsView):
     def plotTree(self,maxX,tree:TreeNode):
         self._recursivePlot(maxX,tree.root,None)
         self.setScene(self.scene)
+    
+    def plotBN(self,bn):
+        
+        for node in bn.nodes:
+            nodeitem = NodeItem(1,None,isBayes=True)
+            nodeitem.fromBayesNode(node)
+            self.scene.addItem(nodeitem)
+        
+        self.setScene(self.scene)
+        
+
 

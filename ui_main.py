@@ -13,7 +13,6 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFrame>
-#include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
@@ -142,7 +141,7 @@ public:
     QLineEdit *lineEditprob;
     QSpacerItem *verticalSpacer_6;
     QVBoxLayout *verticalLayout_9;
-    QGraphicsView *graphicsView_2;
+    Canvas *graphicsViewBN;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -150,7 +149,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(830, 709);
+        MainWindow->resize(1196, 638);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -224,6 +223,7 @@ public:
         tableViewTrain->setMinimumSize(QSize(0, 0));
         tableViewTrain->setMaximumSize(QSize(300, 16777215));
         tableViewTrain->setStyleSheet(QString::fromUtf8(""));
+        tableViewTrain->setFrameShadow(QFrame::Plain);
         tableViewTrain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
         tableViewTrain->horizontalHeader()->setMinimumSectionSize(10);
         tableViewTrain->horizontalHeader()->setDefaultSectionSize(40);
@@ -255,6 +255,7 @@ public:
         sizePolicy1.setHeightForWidth(tableViewTest->sizePolicy().hasHeightForWidth());
         tableViewTest->setSizePolicy(sizePolicy1);
         tableViewTest->setMaximumSize(QSize(300, 16777215));
+        tableViewTest->setFrameShadow(QFrame::Plain);
         tableViewTest->horizontalHeader()->setMinimumSectionSize(10);
         tableViewTest->horizontalHeader()->setDefaultSectionSize(40);
         tableViewTest->verticalHeader()->setMinimumSectionSize(10);
@@ -366,7 +367,7 @@ public:
         scrollArea->setWidgetResizable(true);
         canvas = new QWidget();
         canvas->setObjectName(QString::fromUtf8("canvas"));
-        canvas->setGeometry(QRect(0, 0, 185, 578));
+        canvas->setGeometry(QRect(0, 0, 551, 507));
         horizontalLayout_7 = new QHBoxLayout(canvas);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         graphicsView = new Canvas(canvas);
@@ -680,6 +681,9 @@ public:
 
         labelvar = new QLabel(tab_3);
         labelvar->setObjectName(QString::fromUtf8("labelvar"));
+        labelvar->setStyleSheet(QString::fromUtf8("border-color: rgb(81, 81, 81);"));
+        labelvar->setFrameShape(QFrame::Panel);
+        labelvar->setFrameShadow(QFrame::Sunken);
 
         verticalLayout_10->addWidget(labelvar);
 
@@ -690,6 +694,8 @@ public:
 
         labelcond = new QLabel(tab_3);
         labelcond->setObjectName(QString::fromUtf8("labelcond"));
+        labelcond->setFrameShape(QFrame::Panel);
+        labelcond->setFrameShadow(QFrame::Sunken);
 
         verticalLayout_10->addWidget(labelcond);
 
@@ -722,10 +728,10 @@ public:
 
         verticalLayout_9 = new QVBoxLayout();
         verticalLayout_9->setObjectName(QString::fromUtf8("verticalLayout_9"));
-        graphicsView_2 = new QGraphicsView(tabBN);
-        graphicsView_2->setObjectName(QString::fromUtf8("graphicsView_2"));
+        graphicsViewBN = new Canvas(tabBN);
+        graphicsViewBN->setObjectName(QString::fromUtf8("graphicsViewBN"));
 
-        verticalLayout_9->addWidget(graphicsView_2);
+        verticalLayout_9->addWidget(graphicsViewBN);
 
 
         horizontalLayout_11->addLayout(verticalLayout_9);
@@ -740,7 +746,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 830, 22));
+        menubar->setGeometry(QRect(0, 0, 1196, 22));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
@@ -748,7 +754,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget_2->setCurrentIndex(1);
+        tabWidget_2->setCurrentIndex(0);
         tabWidget->setCurrentIndex(0);
         comboTreeType->setCurrentIndex(0);
         tabWidget_3->setCurrentIndex(1);

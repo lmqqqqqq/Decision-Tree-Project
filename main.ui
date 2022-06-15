@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
-    <height>709</height>
+    <width>1196</width>
+    <height>638</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,7 +24,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget_2">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabDecisionTree">
        <attribute name="title">
@@ -150,6 +150,9 @@
                     <property name="styleSheet">
                      <string notr="true"/>
                     </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Plain</enum>
+                    </property>
                     <property name="sizeAdjustPolicy">
                      <enum>QAbstractScrollArea::AdjustIgnored</enum>
                     </property>
@@ -207,6 +210,9 @@
                       <width>300</width>
                       <height>16777215</height>
                      </size>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Plain</enum>
                     </property>
                     <attribute name="horizontalHeaderMinimumSectionSize">
                      <number>10</number>
@@ -410,8 +416,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>185</width>
-                   <height>578</height>
+                   <width>551</width>
+                   <height>507</height>
                   </rect>
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -918,6 +924,15 @@
                 </item>
                 <item>
                  <widget class="QLabel" name="labelvar">
+                  <property name="styleSheet">
+                   <string notr="true">border-color: rgb(81, 81, 81);</string>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Panel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
                   <property name="text">
                    <string>TextLabel</string>
                   </property>
@@ -932,6 +947,12 @@
                 </item>
                 <item>
                  <widget class="QLabel" name="labelcond">
+                  <property name="frameShape">
+                   <enum>QFrame::Panel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
                   <property name="text">
                    <string>TextLabel</string>
                   </property>
@@ -980,7 +1001,7 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
-             <widget class="QGraphicsView" name="graphicsView_2"/>
+             <widget class="Canvas" name="graphicsViewBN"/>
             </item>
            </layout>
           </item>
@@ -997,7 +1018,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>830</width>
+     <width>1196</width>
      <height>22</height>
     </rect>
    </property>
